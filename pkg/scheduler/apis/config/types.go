@@ -124,6 +124,8 @@ type KubeSchedulerProfile struct {
 	// PluginConfig must be specified for all profiles.
 	Plugins *Plugins
 
+	// PluginConfig 是每个插件的一组可选的自定义插件参数。
+	// 省略插件的配置参数相当于使用该插件的默认配置。
 	// PluginConfig is an optional set of custom plugin arguments for each plugin.
 	// Omitting config args for a plugin is equivalent to using the default config
 	// for that plugin.

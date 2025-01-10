@@ -256,6 +256,7 @@ func defaultFrameworkOptions(stopCh <-chan struct{}) frameworkOptions {
 
 var _ framework.Framework = &frameworkImpl{}
 
+// framework对象注册了插件，其中插件有两个来源一个是系统注册，是从Registry获取，另一个是配置文件写入从profile中获取
 // NewFramework initializes plugins given the configuration and the registry.
 func NewFramework(ctx context.Context, r Registry, profile *config.KubeSchedulerProfile, opts ...Option) (framework.Framework, error) {
 	options := defaultFrameworkOptions(ctx.Done())

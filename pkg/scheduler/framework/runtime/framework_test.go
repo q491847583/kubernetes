@@ -389,6 +389,7 @@ func (t TestBindPlugin) Bind(ctx context.Context, state *framework.CycleState, p
 
 // nolint:errcheck   // Ignore the error returned by Register as before
 var registry = func() Registry {
+	// 往Registry中注入各种插件
 	r := make(Registry)
 	r.Register(scoreWithNormalizePlugin1, newScoreWithNormalizePlugin1)
 	r.Register(scoreWithNormalizePlugin2, newScoreWithNormalizePlugin2)
@@ -495,6 +496,7 @@ func TestInitFrameworkWithScorePlugins(t *testing.T) {
 			_, ctx := ktesting.NewTestContext(t)
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
+			// registry各种插件集合
 			_, err := newFrameworkWithQueueSortAndBind(ctx, registry, profile)
 			if tt.initErr && err == nil {
 				t.Fatal("Framework initialization should fail")
@@ -504,6 +506,8 @@ func TestInitFrameworkWithScorePlugins(t *testing.T) {
 			}
 		})
 	}
+
+	fmt.Println("yinpengjakx TestInitFrameworkWithScorePlugins end...")
 }
 
 func TestNewFrameworkErrors(t *testing.T) {
