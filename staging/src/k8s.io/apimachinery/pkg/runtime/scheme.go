@@ -102,6 +102,7 @@ func NewScheme() *Scheme {
 	s.converter = conversion.NewConverter(nil)
 
 	// Enable couple default conversions by default.
+	// 向scheme中注册raw和object互转函数
 	utilruntime.Must(RegisterEmbeddedConversions(s))
 	utilruntime.Must(RegisterStringConversions(s))
 	return s

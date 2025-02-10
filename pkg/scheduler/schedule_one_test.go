@@ -3238,6 +3238,28 @@ func Test_prioritizeNodes(t *testing.T) {
 var lowPriority, midPriority, highPriority = int32(0), int32(100), int32(1000)
 
 func TestNumFeasibleNodesToFind(t *testing.T) {
+	// tests is a slice of test cases for evaluating the percentage of nodes to score
+	// in a Kubernetes scheduler. Each test case includes the following fields:
+	// - name: A descriptive name for the test case.
+	// - globalPercentage: The global percentage of nodes to score, if set.
+	// - profilePercentage: A pointer to the profile-specific percentage of nodes to score, if set.
+	// - numAllNodes: The total number of nodes available.
+	// - wantNumNodes: The expected number of nodes to be scored based on the given percentages and total nodes.
+	/*
+	测试用例说明：
+	此结构体定义了一系列测试场景，用于验证在不同配置下（全局或特定配置）根据节点总数计算待调度（评分）节点数的正确性。
+
+	字段说明：
+	- name: 测试用例的名称，用于描述当前场景。
+	- globalPercentage: 全局设置的节点评分百分比；当profilePercentage未设置时，将使用此值。
+	- profilePercentage: 配置文件中指定的节点评分百分比；若设置了此值，则优先使用此值来计算待评分节点数。
+	- numAllNodes: 系统中所有节点的总数。
+	- wantNumNodes: 预期计算出的待评分节点数，用于断言验证计算逻辑的正确性。
+
+	注意事项：
+	- 当节点总数不超过50时，无论是否设置百分比，测试均期望返回所有节点。
+	- 当节点总数超过50时，将按设置的百分比（优先考虑profilePercentage，其次为globalPercentage）计算待评分节点数，但可能会涉及对结果的上限或特殊条件处理。
+	*/
 	tests := []struct {
 		name              string
 		globalPercentage  int32

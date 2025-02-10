@@ -62,6 +62,29 @@ import (
 	utiltesting "k8s.io/kubernetes/test/utils/ktesting"
 )
 
+// TestSchedulerCreation 测试调度器创建过程中的各种配置场景和边界情况。
+//
+// 主要测试场景：
+// 1. 有效的外部插件注册表（valid out-of-tree registry）：
+//   - 使用有效注册表和一个包含DefaultBinder插件的profile，预期创建调度器成功。
+//
+// 2. 无效的外部插件注册表（repeated plugin name in out-of-tree plugin）：
+//   - 使用包含重复DefaultBinder插件的注册表，验证返回错误信息“a plugin named DefaultBinder already exists”。
+//
+// 3. 多个profile（multiple profiles）：
+//   - 提供多个profile（如“foo”和“bar”），确保创建的调度器包含所有指定profile，并校验profile名称排序。
+//
+// 4. 重复的profile（Repeated profiles）：
+//   - 当配置中出现重复的profile名称时，预期返回错误信息“duplicate profile with scheduler name "foo"”，防止重复配置。
+//
+// 5. Extenders的配置（With extenders）：
+//   - 配置包含外部扩展器，测试调度器及其各个profile中扩展器名称是否被正确设置与同步。
+//
+// 关键步骤说明：
+// a. 初始化假客户端和informer工厂，用于构建测试环境。
+// b. 创建事件广播器并构造上下文，确保调度器事件能被正确处理。
+// c. 根据测试用例中的不同Option配置，调用New方法创建调度器实例。
+// d. 对返回的错误、profiles集合以及extenders集合分别进行验证，确保其与预期结果一致。
 func TestSchedulerCreation(t *testing.T) {
 	invalidRegistry := map[string]frameworkruntime.PluginFactory{
 		defaultbinder.Name: defaultbinder.New,
@@ -70,16 +93,16 @@ func TestSchedulerCreation(t *testing.T) {
 		"Foo": defaultbinder.New,
 	}
 	cases := []struct {
-		name          string
-		opts          []Option
-		wantErr       string
-		wantProfiles  []string
-		wantExtenders []string
+		name          string   // 测试用例名称
+		opts          []Option // 调度器配置选项
+		wantErr       string   // 期望的错误信息
+		wantProfiles  []string // 期望的配置文件列表
+		wantExtenders []string // 期望的扩展器列表
 	}{
 		{
 			name: "valid out-of-tree registry",
 			opts: []Option{
-				WithFrameworkOutOfTreeRegistry(validRegistry),
+				WithFrameworkOutOfTreeRegistry(validRegistry), // 使用有效注册表
 				WithProfiles(
 					schedulerapi.KubeSchedulerProfile{
 						SchedulerName: "default-scheduler",
@@ -94,7 +117,7 @@ func TestSchedulerCreation(t *testing.T) {
 		{
 			name: "repeated plugin name in out-of-tree plugin",
 			opts: []Option{
-				WithFrameworkOutOfTreeRegistry(invalidRegistry),
+				WithFrameworkOutOfTreeRegistry(invalidRegistry), // 使用无效注册表
 				WithProfiles(
 					schedulerapi.KubeSchedulerProfile{
 						SchedulerName: "default-scheduler",

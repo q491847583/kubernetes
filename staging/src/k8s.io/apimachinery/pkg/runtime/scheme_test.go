@@ -71,6 +71,7 @@ func TestScheme(t *testing.T) {
 	externalGV := schema.GroupVersion{Group: "test.group", Version: "testExternal"}
 	externalGVK := externalGV.WithKind("Simple")
 
+	// 构造scheme函数，内部注册conver函数
 	scheme := runtime.NewScheme()
 	scheme.AddKnownTypeWithName(internalGVK, &runtimetesting.InternalSimple{})
 	scheme.AddKnownTypeWithName(externalGVK, &runtimetesting.ExternalSimple{})

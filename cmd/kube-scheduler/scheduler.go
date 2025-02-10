@@ -28,6 +28,7 @@ import (
 
 func main() {
 	command := app.NewSchedulerCommand()
+	// 启动服务
 	code := cli.Run(command)
 	os.Exit(code)
 }

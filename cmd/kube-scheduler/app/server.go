@@ -95,13 +95,16 @@ suitable Node. Multiple different schedulers may be used within a cluster;
 kube-scheduler is the reference implementation.
 See [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/)
 for more information about scheduling and the kube-scheduler component.`,
+		// 预运行函数，在每次子命令执行之前运行的函数，确保特性门控（feature gates）在 RunE 之前被设置。
 		PersistentPreRunE: func(*cobra.Command, []string) error {
 			// makes sure feature gates are set before RunE.
 			return opts.ComponentGlobalsRegistry.Set()
 		},
+		// 实际执行命令的函数
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runCommand(cmd, opts, registryOptions...)
 		},
+		// 验证命令行参数
 		Args: func(cmd *cobra.Command, args []string) error {
 			for _, arg := range args {
 				if len(arg) > 0 {
